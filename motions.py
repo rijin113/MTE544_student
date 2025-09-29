@@ -17,10 +17,6 @@ from nav_msgs.msg import Odometry
 
 from rclpy.time import Time
 
-# You may add any other imports you may need/want to use below
-# import ...
-
-
 CIRCLE=0; SPIRAL=1; ACC_LINE=2
 motion_types=['circle', 'spiral', 'line']
 
@@ -52,20 +48,15 @@ class motion_executioner(Node):
 
         # TODO Part 5: Create below the subscription to the topics corresponding to the respective sensors
         # IMU subscription
-        
         self.create_subscription(Imu, "/imu", self.imu_callback, qos_profile=qos)
 
         # ENCODER subscription
-
         self.create_subscription(Odometry, "/odom", self.odom_callback, qos_profile=qos)
         
         # LaserScan subscription 
-        
         self.create_subscription(LaserScan, "/scan", self.laser_callback, qos_profile=qos)
-        ...
         
         self.create_timer(0.1, self.timer_callback)
-
 
     # TODO Part 5: Callback functions: complete the callback functions of the three sensors to log the proper data.
     # To also log the time you need to use the rclpy Time class, each ros msg will come with a header, and then
@@ -74,15 +65,43 @@ class motion_executioner(Node):
     # You can save the needed fields into a list, and pass the list to the log_values function in utilities.py
 
     def imu_callback(self, imu_msg: Imu):
-        ...    # log imu msgs
+        self.imu_initialized = True
+        # log imu msgs
+        imu_acc_x = imu_msg.linear_acceleration.x
+        imu_acc_y = imu_msg.linear_acceleration.y
+        imu_angular_z = imu_msg.angular_velocity.z
+        timestamp = Time.from_msg(imu_msg.header.stamp).nanoseconds
+
+        imu_list = [imu_acc_x, imu_acc_y, imu_angular_z, timestamp]
+
+        self.imu_logger.log_values(imu_list)
         
     def odom_callback(self, odom_msg: Odometry):
-        
-        ... # log odom msgs
+        self.odom_initialized = True
+        # log odom msgs
+        odom_pos_x = odom_msg.pose.pose.position.x
+        odom_pos_y = odom_msg.pose.pose.position.y
+        odom_pos_z = odom_msg.pose.pose.position.z
+        odom_orientation_w = odom_msg.pose.pose.orientation.w
+        yaw = euler_from_quaternion([odom_pos_x, odom_pos_y, odom_pos_z, odom_orientation_w])
+
+        timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
+
+        odom_list = [odom_pos_x, odom_pos_y, yaw, timestamp]
+
+        self.odom_logger.log_values(odom_list)
                 
     def laser_callback(self, laser_msg: LaserScan):
-        
-        ... # log laser msgs with position msg at that time
+        self.laser_initialized = True
+        # log laser msgs with position msg at that time
+
+        angle_increment = laser_msg.angle_increment
+        ranges = laser_msg.ranges
+        timestamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
+
+        laser_list = [ranges, angle_increment, timestamp]
+        self.laser_logger.log_values(laser_list)
+
                 
     def timer_callback(self):
         
@@ -112,20 +131,20 @@ class motion_executioner(Node):
     
     # TODO Part 4: Motion functions: complete the functions to generate the proper messages corresponding to the desired motions of the robot
 
-    def make_circular_twist(self):
-        
+    def make_circular_twist(self): 
         msg=Twist()
-        ... # fill up the twist msg for circular motion
+        msg.linear.x = 1.0
+        msg.angular.z = 5.0
         return msg
 
     def make_spiral_twist(self):
         msg=Twist()
-        ... # fill up the twist msg for spiral motion
+        msg.angular.z = 5.0
         return msg
     
     def make_acc_line_twist(self):
         msg=Twist()
-        ... # fill up the twist msg for line motion
+        msg.linear.x = 1.0
         return msg
 
 import argparse
