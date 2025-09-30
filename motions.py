@@ -65,41 +65,40 @@ class motion_executioner(Node):
     # You can save the needed fields into a list, and pass the list to the log_values function in utilities.py
 
     def imu_callback(self, imu_msg: Imu):
-        self.imu_initialized = True
         # log imu msgs
+        self.imu_initialized = True
+
+        timestamp = Time.from_msg(imu_msg.header.stamp).nanoseconds
         imu_acc_x = imu_msg.linear_acceleration.x
         imu_acc_y = imu_msg.linear_acceleration.y
         imu_angular_z = imu_msg.angular_velocity.z
-        timestamp = Time.from_msg(imu_msg.header.stamp).nanoseconds
-
         imu_list = [imu_acc_x, imu_acc_y, imu_angular_z, timestamp]
 
         self.imu_logger.log_values(imu_list)
         
     def odom_callback(self, odom_msg: Odometry):
-        self.odom_initialized = True
         # log odom msgs
+        self.odom_initialized = True
+
+        timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
         odom_pos_x = odom_msg.pose.pose.position.x
         odom_pos_y = odom_msg.pose.pose.position.y
         odom_pos_z = odom_msg.pose.pose.position.z
         odom_orientation_w = odom_msg.pose.pose.orientation.w
         yaw = euler_from_quaternion([odom_pos_x, odom_pos_y, odom_pos_z, odom_orientation_w])
-
-        timestamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
-
         odom_list = [odom_pos_x, odom_pos_y, yaw, timestamp]
 
         self.odom_logger.log_values(odom_list)
                 
     def laser_callback(self, laser_msg: LaserScan):
-        self.laser_initialized = True
         # log laser msgs with position msg at that time
+        self.laser_initialized = True
 
+        timestamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
         angle_increment = laser_msg.angle_increment
         ranges = laser_msg.ranges
-        timestamp = Time.from_msg(laser_msg.header.stamp).nanoseconds
-
         laser_list = [ranges, angle_increment, timestamp]
+
         self.laser_logger.log_values(laser_list)
 
                 
@@ -150,14 +149,8 @@ class motion_executioner(Node):
 import argparse
 
 if __name__=="__main__":
-    
-
     argParser=argparse.ArgumentParser(description="input the motion type")
-
-
     argParser.add_argument("--motion", type=str, default="circle")
-
-
 
     rclpy.init()
 
@@ -175,8 +168,6 @@ if __name__=="__main__":
     else:
         print(f"we don't have {arg.motion.lower()} motion type")
 
-
-    
     try:
         rclpy.spin(ME)
     except KeyboardInterrupt:
