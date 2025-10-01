@@ -1,5 +1,4 @@
 from math import atan2, asin, sqrt
-import tf_transformations
 
 M_PI=3.1415926535
 
@@ -24,7 +23,6 @@ class Logger:
         with open(self.filename, 'a') as file:
             vals_str=""
 
-            # TODO Part 5: Write the values from the list to the file
             for val in values_list:
                 vals_str+=str(val)
                 vals_str+=", "
@@ -81,8 +79,6 @@ class FileReader:
         
         return headers, table
 
-
-# TODO Part 5: Implement the conversion from Quaternion to Euler Angles
 def euler_from_quaternion(quat):
     """
     Convert quaternion (w in last place) to euler roll, pitch, yaw.
