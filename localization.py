@@ -9,8 +9,6 @@ from nav_msgs.msg import Odometry as odom
 
 from rclpy import init, spin
 
-import rclpy
-
 rawSensor = 0
 class localization(Node):
     
@@ -43,6 +41,9 @@ class localization(Node):
         odom_pos_y = pose_msg.pose.pose.position.y
         odom_pos_z = pose_msg.pose.pose.position.z
         odom_orientation_w = pose_msg.pose.pose.orientation.w
+
+        # TODO PASS ORIENTATION X Y Z INSTEAD OF POSITION x, y, z
+
         yaw = euler_from_quaternion([odom_pos_x, odom_pos_y, odom_pos_z, odom_orientation_w])
         
         self.pose = [odom_pos_x, odom_pos_y, yaw, timestamp]
@@ -58,11 +59,11 @@ class localization(Node):
 # This is to make sure this node functions right before using it in decision.py
 
 if __name__=="__main__":
-    rclpy.init()
+    init()
     try:
         print("Starting Localization node!")
         ME = localization()
-        rclpy.spin(ME)
+        spin(ME)
     except KeyboardInterrupt:
         print("Exiting Localization node!")
     

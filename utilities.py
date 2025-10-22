@@ -114,6 +114,8 @@ def calculate_angular_error(current_pose, goal_pose):
 
     error_angular = (current_pose[2] - atan2(goal_pose[1]/goal_pose[0])) % (2*M_PI)
 
+    # update implementation if possible
+
     # Remember to handle the cases where the angular error might exceed the range [-π, π]
 
     return error_angular
