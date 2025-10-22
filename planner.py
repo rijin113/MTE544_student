@@ -27,5 +27,6 @@ class planner:
     def trajectory_planner(self):
         pass
         # the return should be a list of trajectory points: [ [x1,y1], ..., [xn,yn]]
+        
         # return 
 
