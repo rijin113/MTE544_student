@@ -18,9 +18,10 @@ from localization import localization, rawSensor
 from planner import TRAJECTORY_PLANNER, POINT_PLANNER, planner
 from controller import controller, trajectoryController
 
-# You may add any other imports you may need/want to use below
-import rclpy
 
+# You may add any other imports you may need/want to use below
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
+import numpy as np
 
 class decision_maker(Node):
     
@@ -70,15 +71,12 @@ class decision_maker(Node):
             return
 
         vel_msg=Twist()
-        
         # TODO Part 3: Check if you reached the goal (update based on threshold)
-        if type(self.goal) == list and \
-            self.goal[0] == self.localizer.pose[0] and \
-            self.goal[1] == self.localizer.pose[1]:
+        if type(self.goal) == list and np.abs(calculate_linear_error(self.localizer.pose, self.goal[-1])) <= 0.05:
             reached_goal=True
         else: 
             reached_goal=False
-
+    
         if reached_goal:
             print("reached goal")
             self.publisher.publish(vel_msg)
@@ -87,14 +85,14 @@ class decision_maker(Node):
             self.controller.PID_linear.logger.save_log()
             
             #TODO Part 3: exit the spin
-            self.localizer.destroy_node() # change this.
+            raise(SystemExit)
         
         velocity, yaw_rate = self.controller.vel_request(self.localizer.getPose(), self.goal, True)
 
         #TODO Part 4: Publish the velocity to move the robot
-        #self.publisher.publish(vel_msg)
-    
-        # vel_msg.z = yaw rate
+        vel_msg.linear.x = velocity
+        vel_msg.angular.z = yaw_rate
+        self.publisher.publish(vel_msg)
 
 import argparse
 
@@ -106,8 +104,10 @@ def main(args=None):
     # TODO Part 3: You migh need to change the QoS profile based on whether you're using the real robot or in simulation.
     # Remember to define your QoS profile based on the information available in "ros2 topic info /odom --verbose" as explained in Tutorial 3
     
-    odom_qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
-    
+    odom_qos=QoSProfile(reliability=ReliabilityPolicy.RELIABLE, \
+                        durability=DurabilityPolicy.VOLATILE, \
+                        history=HistoryPolicy.KEEP_LAST, \
+                        depth=10)
 
     # TODO Part 4: instantiate the decision_maker with the proper parameters for moving the robot
     if args.motion.lower() == "point":
@@ -117,8 +117,8 @@ def main(args=None):
     else:
         print("invalid motion type", file=sys.stderr)        
     
-    
     try:
+        print("Starting decisions node!")
         spin(DM)
     except SystemExit:
         print(f"reached there successfully {DM.localizer.pose}")

@@ -15,8 +15,8 @@ class controller:
     def __init__(self, klp=0.2, klv=0.2, kli=0.2, kap=0.2, kav=0.2, kai=0.2):
         
         # TODO Part 5 and 6: Modify the below lines to test your PD, PI, and PID controller
-        self.PID_linear=PID_ctrl(P, klp, klv, kli, filename_="linear.csv")
-        self.PID_angular=PID_ctrl(P, kap, kav, kai, filename_="angular.csv")
+        self.PID_linear=PID_ctrl(PID, klp, klv, kli, filename_="linear.csv")
+        self.PID_angular=PID_ctrl(PID, kap, kav, kai, filename_="angular.csv")
 
     
     def vel_request(self, pose, goal, status):
@@ -58,7 +58,7 @@ class trajectoryController(controller):
         # TODO Part 5: Add saturation limits for the robot linear and angular velocity (hint: you can use np.clip function)
 
         linear_vel = np.clip(linear_vel, 0, 0.31) 
-        angular_vel= np.clip(angular_vel, 0, 1.90) 
+        angular_vel= np.clip(angular_vel, 0, 1.90)
         
         return linear_vel, angular_vel
 

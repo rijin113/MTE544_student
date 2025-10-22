@@ -4,7 +4,7 @@ from utilities import Logger, euler_from_quaternion
 from rclpy.time import Time
 from rclpy.node import Node
 
-from rclpy.qos import QoSProfile
+from rclpy.qos import QoSProfile, ReliabilityPolicy, DurabilityPolicy, HistoryPolicy
 from nav_msgs.msg import Odometry as odom
 
 from rclpy import init, spin
@@ -19,7 +19,10 @@ class localization(Node):
         # TODO Part 3: Define the QoS profile variable based on whether you are using the simulation (Turtlebot 3 Burger) or the real robot (Turtlebot 4)
         # Remember to define your QoS profile based on the information available in "ros2 topic info /odom --verbose" as explained in Tutorial 3
 
-        odom_qos=QoSProfile(reliability=2, durability=2, history=1, depth=10)
+        odom_qos=QoSProfile(reliability=ReliabilityPolicy.RELIABLE, \
+                            durability=DurabilityPolicy.VOLATILE, \
+                            history=HistoryPolicy.KEEP_LAST, \
+                            depth=10)
         
         self.loc_logger=Logger("robot_pose.csv", ["x", "y", "theta", "stamp"])
         self.pose=None
@@ -36,16 +39,16 @@ class localization(Node):
         # TODO Part 3: Read x,y, theta, and record the stamp
         self.odom_initialized = True
 
-        timestamp = Time.from_msg(pose_msg.header.stamp).nanoseconds
+        timestamp = pose_msg.header.stamp
         odom_pos_x = pose_msg.pose.pose.position.x
         odom_pos_y = pose_msg.pose.pose.position.y
         odom_pos_z = pose_msg.pose.pose.position.z
         odom_orientation_w = pose_msg.pose.pose.orientation.w
+        odom_orientation_x = pose_msg.pose.pose.orientation.x
+        odom_orientation_y = pose_msg.pose.pose.orientation.y
+        odom_orientation_z = pose_msg.pose.pose.orientation.z
 
-        # TODO PASS ORIENTATION X Y Z INSTEAD OF POSITION x, y, z
-
-        yaw = euler_from_quaternion([odom_pos_x, odom_pos_y, odom_pos_z, odom_orientation_w])
-        
+        yaw = euler_from_quaternion([odom_orientation_x, odom_orientation_y, odom_orientation_z, odom_orientation_w])
         self.pose = [odom_pos_x, odom_pos_y, yaw, timestamp]
         
         # Log the data
