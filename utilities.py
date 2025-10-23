@@ -116,21 +116,18 @@ def calculate_angular_error(current_pose, goal_pose):
 
     # print(current_pose[2])
     # print(goal_pose[1])
-    curr_x, curr_y, curr_theta = current_pose[:3]
+    current_x, current_y, current_theta = current_pose[:3]
     goal_x, goal_y = goal_pose[:2]
 
-    desired_theta = atan2(goal_y - curr_y, goal_x - curr_x)
-    error_angular = desired_theta - curr_theta
-    
-    # Normalize to [-π, π]
+    desired_theta = atan2(goal_y - current_y, goal_x - current_x)
+    error_angular = desired_theta - current_theta
+
     if error_angular > M_PI:
         error_angular -= 2 * M_PI
     elif error_angular < -M_PI:
         error_angular += 2 * M_PI
 
     print(error_angular)
-
-    # update implementation if possible
 
     # Remember to handle the cases where the angular error might exceed the range [-π, π]
 
