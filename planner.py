@@ -4,8 +4,6 @@ import numpy as np
 POINT_PLANNER=0; TRAJECTORY_PLANNER=1
 PARABOLA=0; SIGMOID=1
 
-
-
 class planner:
     def __init__(self, type_):
 
@@ -18,7 +16,7 @@ class planner:
             return self.point_planner(goalPoint)
         
         elif self.type==TRAJECTORY_PLANNER:
-            return self.trajectory_planner(PARABOLA)
+            return self.trajectory_planner(SIGMOID)
 
 
     def point_planner(self, goalPoint):

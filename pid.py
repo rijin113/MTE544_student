@@ -80,7 +80,6 @@ class PID_ctrl:
         error_int=sum_*dt_avg
         
         # TODO Part 4: Log your errors error, error_dot, error_int and time stamp
-
         self.logger.log_values([latest_error, error_dot, error_int, stamp])
         
         # TODO Part 4: Implement the control law of P-controller
