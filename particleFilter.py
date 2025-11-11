@@ -98,9 +98,13 @@ class particleFilter(Node):
     def initializeParticleFilter(self, x, y, th):
 
         numParticles = self.numParticles
-
+        
         # TODO: generate the particles around the initial pose (x, y, th) (you should use the std_particle_x, std_particle_y, std_particle_theta)
-        self.particlePoses = ... #size should be (numParticles, 3)
+        dist = np.ones([numParticles, 3])
+        x_dist = dist[:, 0]*x +- std
+        y_dist = dist[:, 1]*y +- std
+        th_dist = dist[:, 2]*th +- std
+        self.particlePoses = np.ones([numParticles, 3]) #size should be (numParticles, 3)
 
         self.particles = [particle(particle_, 1/numParticles) for particle_ in
                           self.particlePoses]
