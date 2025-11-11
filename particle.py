@@ -18,8 +18,8 @@ class particle:
         w: angular velocity
         dt: time step
         """
-        self.pose[0] += v * cos(self.pose[2]) * dt
-        self.pose[1] += v * sin(self.pose[2]) * dt
+        self.pose[0] += ((-v/w) * sin(self.pose[2])) + ((v/w) * sin(self.pose[2] + (w * dt)))
+        self.pose[1] += ((v/w) * cos(self.pose[2])) - ((v/w) * cos(self.pose[2] + (w * dt)))
         self.pose[2] += w * dt
 
     # TODO: You need to explain the following function to TA

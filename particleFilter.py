@@ -100,12 +100,19 @@ class particleFilter(Node):
         numParticles = self.numParticles
         
         # TODO: generate the particles around the initial pose (x, y, th) (you should use the std_particle_x, std_particle_y, std_particle_theta)
-        dist = np.ones([numParticles, 3])
-        x_dist = dist[:, 0]*x +- std
-        y_dist = dist[:, 1]*y +- std
-        th_dist = dist[:, 2]*th +- std
-        self.particlePoses = np.ones([numParticles, 3]) #size should be (numParticles, 3)
 
+        x_dist = np.random.normal(loc=x, scale=self.std_particle_x, size=numParticles)
+        y_dist = np.random.normal(loc=y, scale=self.std_particle_y, size=numParticles)
+        th_dist = np.random.normal(loc=th, scale=self.std_particle_theta, size=numParticles)
+
+        # x_dist = x_dist.flatten()
+        # y_dist = y_dist.flatten()
+        # th_dist = th_dist.flatten()
+
+        dist = np.column_stack((x_dist, y_dist, th_dist))
+        print(dist)
+        self.particlePoses = dist #size should be (numParticles, 3)
+        print(particle_ for particle_ in self.particlePoses)
         self.particles = [particle(particle_, 1/numParticles) for particle_ in
                           self.particlePoses]
 
@@ -177,14 +184,14 @@ class particleFilter(Node):
         particles_weights = particles_weights / np.sum(particles_weights)
         
         # TODO: randomly sampling N particles from the list of particles based on their weights (hint: use np.random.choice)
-        sampled_particles = ...
+        sampled_particles = np.random.choice(self.particles, self.numParticles, True, particles_weights)
 
         for bp in sampled_particles:
             x, y, th = bp.getPose()
             # TODO: add noise to the x, y, and th, use the same std_noise for x, y, and th
-            new_x = x + ...
-            new_y = y + ...
-            new_th = th + ...
+            new_x = float(x + np.random.normal(loc=0, scale=std_noise, size=1))
+            new_y = float(y + np.random.normal(loc=0, scale=std_noise, size=1))
+            new_th = float(th + np.random.normal(loc=0, scale=std_noise, size=1))
 
             new_particle = particle([new_x, new_y, new_th], bp.getWeight())
 
