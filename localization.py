@@ -39,7 +39,9 @@ class localization(Node):
             self.initRawSensors()
 
         elif type_==particlesFilter:
+            print("particle filter go")
             self.initParticleFilter()
+            self.time_syncher = None
         else:
             print("We don't have this type for localization", sys.stderr)
             return            
@@ -52,15 +54,18 @@ class localization(Node):
     def initParticleFilter(self):
         self.odom_pose_sub=message_filters.Subscriber(self, odom, "/odom", qos_profile=odom_qos)
         self.pf_pose_sub=message_filters.Subscriber(self, odom, "/pf_pose", qos_profile=odom_qos)
-        time_syncher=message_filters.ApproximateTimeSynchronizer([self.odom_pose_sub, self.pf_pose_sub], queue_size=10, slop=0.1)
-        time_syncher.registerCallback(self.odom_and_pf_pose_callback)
+        self.time_syncher=message_filters.ApproximateTimeSynchronizer([self.odom_pose_sub, self.pf_pose_sub], queue_size=10, slop=0.5)
+        self.time_syncher.registerCallback(self.odom_and_pf_pose_callback)
 
     def odom_and_pf_pose_callback(self, odom_msg: odom, pf_msg: odom):
+        print("odom and pf callback")
         # TODO: You need to use the pf_msg to update the pose of the robot [x, y, theta, stamp]
+    
         self.pose=[pf_msg.pose.pose.position.x,
                     pf_msg.pose.pose.position.y,
                     euler_from_quaternion(pf_msg.pose.pose.orientation),
-                    pf_msg.header.stamp]
+                    pf_msg.header.stamp]    
+        print(self.pose)        
         
         # TODO: You need to log the values from the odom and the particle filter based on the headers
         # TODO: odom values: x, y, theta, vx, yawrate
@@ -83,6 +88,7 @@ class localization(Node):
         
     
     def odom_callback(self, pose_msg):
+        print("odom callback")
         self.pose=[ pose_msg.pose.pose.position.x,
                     pose_msg.pose.pose.position.y,
                     euler_from_quaternion(pose_msg.pose.pose.orientation),
