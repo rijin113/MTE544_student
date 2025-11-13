@@ -105,10 +105,6 @@ class particleFilter(Node):
         y_dist = np.random.normal(loc=y, scale=self.std_particle_y, size=numParticles)
         th_dist = np.random.normal(loc=th, scale=self.std_particle_theta, size=numParticles)
 
-        # x_dist = x_dist.flatten()
-        # y_dist = y_dist.flatten()
-        # th_dist = th_dist.flatten()
-
         dist = np.column_stack((x_dist, y_dist, th_dist))
         print(dist)
         self.particlePoses = dist #size should be (numParticles, 3)

@@ -47,7 +47,7 @@ class decision_maker(Node):
 
         # TODO part 5: call the proper types
         # self.localizer=localization(type_=0) # raw sensor
-        self.localizer=localization(type_=1) # particle filter
+        self.localizer=localization(type_=particlesFilter) # particle filter
         
         if motion_type==POINT_PLANNER:
             self.controller=controller(klp=0.05, klv=0.0, kap=0.8, kav=0.0)      

@@ -59,26 +59,28 @@ class localization(Node):
 
     def odom_and_pf_pose_callback(self, odom_msg: odom, pf_msg: odom):
         print("odom and pf callback")
+
         # TODO: You need to use the pf_msg to update the pose of the robot [x, y, theta, stamp]
-    
-        self.pose=[pf_msg.pose.pose.position.x,
-                    pf_msg.pose.pose.position.y,
-                    euler_from_quaternion(pf_msg.pose.pose.orientation),
-                    pf_msg.header.stamp]    
+        pf_x = pf_msg.pose.pose.position.x
+        pf_y = pf_msg.pose.pose.position.y
+        pf_th = euler_from_quaternion(pf_msg.pose.pose.orientation)
+        pf_stamp = pf_msg.header.stamp
+        self.pose=[pf_x, pf_y, pf_th, pf_stamp]    
         print(self.pose)        
         
         # TODO: You need to log the values from the odom and the particle filter based on the headers
         # TODO: odom values: x, y, theta, vx, yawrate
 
-        odom_values_list = [odom_msg.pose.pose.position.x,
-                    odom_msg.pose.pose.position.y,
-                    euler_from_quaternion(odom_msg.pose.pose.orientation),
-                    odom_msg.twist.twist.linear.x,
-                    odom_msg.twist.twist.angular.z]
+        odom_x = odom_msg.pose.pose.position.x
+        odom_y = odom_msg.pose.pose.position.y
+        odom_th = euler_from_quaternion(odom_msg.pose.pose.orientation)
+        odom_vx = odom_msg.twist.twist.linear.x
+        odom_yawrate = odom_msg.twist.twist.angular.z
+
+        odom_values_list = [odom_x, odom_y, odom_th, odom_vx, odom_yawrate]
+
         # TODO: pf values: x, y, theta
-        pf_values_list = [pf_msg.pose.pose.position.x,
-                    pf_msg.pose.pose.position.y,
-                    euler_from_quaternion(pf_msg.pose.pose.orientation)]
+        pf_values_list = [pf_x, pf_y, pf_th]
 
         stamp = Time.from_msg(odom_msg.header.stamp).nanoseconds
         # Put all the values in a list
@@ -86,17 +88,22 @@ class localization(Node):
         self.loc_logger.log_values(values_to_log)
 
         
-    
     def odom_callback(self, pose_msg):
         print("odom callback")
-        self.pose=[ pose_msg.pose.pose.position.x,
-                    pose_msg.pose.pose.position.y,
-                    euler_from_quaternion(pose_msg.pose.pose.orientation),
-                    pose_msg.header.stamp]
+
+        pose_x = pose_msg.pose.pose.position.x
+        pose_y = pose_msg.pose.pose.position.y
+        pose_th = euler_from_quaternion(pose_msg.pose.pose.orientation)
+        pose_stamp = pose_msg.header.stamp
+
+        self.pose=[pose_x, pose_y, pose_th, pose_stamp]
         
+        pose_vx = pose_msg.twist.twist.linear.x
+        pose_yawrate = pose_msg.twist.twist.angular.z
         stamp = Time.from_msg(pose_msg.header.stamp).nanoseconds
+        
         # Put all the values in a list
-        values_to_log = [pose_msg.pose.pose.position.x, pose_msg.pose.pose.position.y, euler_from_quaternion(pose_msg.pose.pose.orientation), pose_msg.twist.twist.linear.x, pose_msg.twist.twist.angular.z, 0, 0, 0, stamp]
+        values_to_log = [pose_x, pose_y, pose_th, pose_vx, pose_yawrate, 0, 0, 0, stamp]
         self.loc_logger.log_values(values_to_log)
 
         
