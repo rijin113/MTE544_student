@@ -1,0 +1,6 @@
+- robot is shifted 0.5 left from the center. 
+- target point is also shifted 0.5 left from part 5
+
+- if i put the same point as in part 5, then it will spin around cuz the angle is too big (check part6_1_sametarget)
+
+- all target points are just in one direction. like a straight line.

@@ -1,0 +1,3 @@
+- target point is same as what i put for part 5. a point down from the robot marker.
+- but since the robot is shifted left, it will spin around. if i want proper stuff, then i have to offset
+the target point as well. check the other folder.
