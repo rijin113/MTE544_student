@@ -25,8 +25,6 @@ class Node:
         return self.position == other.position
 
 # This function return the path of the search
-
-
 def return_path(current_node, maze):
     path = []
     no_rows, no_columns = np.shape(maze)
